@@ -5,6 +5,16 @@ const mongoose = require('mongoose');
 const Sauces = require('./models/sauces');
 
 const app = express();
+// ------------------------------------ CONNECT TO MONGO DB--------------------------------------
+mongoose.connect(
+    'mongodb+srv://gabi:lE6rCRkGhz1PiaQM@cluster0-2kcd5.mongodb.net/Cluster0?retryWrites=true&w=majority',)
+    .then(() => {
+      console.log('Successfully connected to MongoDB Atlas!');
+    })
+    .catch((error) => {
+      console.log('Unable to connect to MongoDB Atlas!');
+      console.error(error);
+    });
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,7 +24,7 @@ app.use((req, res, next) => {
   });
 
   app.use(bodyParser.json());
-
+//  ---------------------------------------- POST REQUEST  ---------------------------------------------------------
   app.post('/api/sauces', (req, res, next) => {
       const sauces = new Sauces({
         userId: req.body.userId,
@@ -43,39 +53,35 @@ app.use((req, res, next) => {
           }
       );
   });
-
+//   ------------------------------------------ GET SAUCES BY ID -------------------------------------------------------
+  app.get('/api/sauces/:id', (req, res, next) => {
+    Sauces.findOne({
+      _id: req.params.id
+    }).then(
+      (sauces) => {
+        res.status(200).json(sauces);
+      }
+    ).catch(
+      (error) => {
+        res.status(404).json({
+          error: error
+        });
+      }
+    );
+  });
+// ------------------------------------------------------------- GET SAUCES LIST ----------------------------------------------
 app.use('/api/sauces', (req, res, next) => {
-    const sauces = [
-        {
-            _id: '454dsfd5gfdgf5',
-            userId: '032519',
-            name: 'devil sauce',
-            manufacturer: 'Pekocko',
-            description: 'Lorem ipsum is a pseudo-Latin text used in web design, typography, layout, and printing in place of English to emphasise design elements over content.',
-            mainPepper: 'chili pepper',
-            imageUrl: '',
-            heat: 12,
-            likes: 5,
-            dislikes: 0,
-            usersLiked: [''],
-            usersDisliked: [''],
-        },
-        {
-            _id: '302dsfd5gfdgf5',
-            userId: '594519',
-            name: 'huracane sauce',
-            manufacturer: 'Pekocko',
-            description: 'Lorem ipsum is a pseudo-Latin text used in web design, typography, layout, and printing in place of English to emphasise design elements over content.',
-            mainPepper: 'chili pepper',
-            imageUrl: '',
-            heat: 10,
-            likes: 5,
-            dislikes: 0,
-            usersLiked: [''],
-            usersDisliked: [''],
-        },
-    ];
-    res.status(200).json(sauces);
+    Sauces.find().then(
+        (sauce) => {
+            res.status(200).json(sauce);
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                error: error
+            });
+        }
+    );
 });
 
 module.exports = app;
