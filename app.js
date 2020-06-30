@@ -53,7 +53,7 @@ app.use((req, res, next) => {
           }
       );
   });
-//   ------------------------------------------ GET SAUCES BY ID -------------------------------------------------------
+//   ------------------------------------------ GET SAUCES BY ID & UPDATE SAUCE -------------------------------------------------------
   app.get('/api/sauces/:id', (req, res, next) => {
     Sauces.findOne({
       _id: req.params.id
@@ -69,6 +69,38 @@ app.use((req, res, next) => {
       }
     );
   });
+
+  app.put('/api/stuff/:id', (req, res, next) => {
+    const sauces = new Sauces({
+        userId: req.body.userId,
+        name: req.body.name,
+        manufacturer: req.body.manufacturer,
+        description: req.body.description,
+        mainPepper: req.body.mainPepper,
+        imageUrl: req.body.imageUrl,
+        heat: req.body.heat,
+        likes: req.body.likes,
+        dislikes: req.body.dislikes,
+        usersLiked: req.body.usersLiked,
+        usersDisliked: req.body.usersDisliked,
+    });
+    Sauces.updateOne({_id: req.params.id}, sauces).then(
+      () => {
+        res.status(201).json({
+          message:'Sauce update successfully'
+        });
+      }
+    ).catch(
+      (error) => {
+        res.status(400).json({
+          error: error
+        });
+      }
+    );
+  });
+  //  -------------------------------------- DELETE SAUCE ---------------------------
+
+
 // ------------------------------------------------------------- GET SAUCES LIST ----------------------------------------------
 app.use('/api/sauces', (req, res, next) => {
     Sauces.find().then(
