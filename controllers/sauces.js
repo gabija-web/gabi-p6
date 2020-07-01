@@ -48,7 +48,27 @@ exports.getOneSauces = (req, res, next) => {
   };
 
   exports.modifySauces = (req, res, next) => {
-    const sauces = new Sauces({
+    let sauces = new Sauces({ _id: req.params._id });
+    if (req.file) {
+      const url = req.protocol + '://' + req.get('host');
+      req.body.sauces =JSON.parse(req.body.sauces);
+      sauces = {
+        _id: req.params.id,
+        userId: req.body.sauces.userId,
+        name: req.body.sauces.name,
+        manufacturer: req.body.sauces.manufacturer,
+        description: req.body.sauces.description,
+        mainPepper: req.body.sauces.mainPepper,
+        imageUrl: url + '/images' + req.file.filename,
+        heat: req.body.sauces.heat,
+        likes: req.body.sauces.likes,
+        dislikes: req.body.sauces.dislikes,
+        usersLiked: req.body.sauces.usersLiked,
+        usersDisliked: req.body.sauces.usersDisliked,
+    };
+    } else {
+      sauces = {
+        _id: req.params.id,
         userId: req.body.userId,
         name: req.body.name,
         manufacturer: req.body.manufacturer,
@@ -60,7 +80,8 @@ exports.getOneSauces = (req, res, next) => {
         dislikes: req.body.dislikes,
         usersLiked: req.body.usersLiked,
         usersDisliked: req.body.usersDisliked,
-    });
+      };
+    }
     Sauces.updateOne({_id: req.params.id}, sauces).then(
       () => {
         res.status(201).json({
