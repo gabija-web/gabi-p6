@@ -6,14 +6,14 @@ exports.createSauces = (req, res, next) => {
   req.body.sauce = JSON.parse(req.body.sauce);
   const url = req.protocol + '://' + req.get('host');
   const sauces = new Sauces({
-    _id: mongoose.Types.ObjectId(),
+      _id: mongoose.Types.ObjectId(),
       userId: req.body.sauce.userId,
       name: req.body.sauce.name,
       manufacturer: req.body.sauce.manufacturer,
       description: req.body.sauce.description,
       mainPepper: req.body.sauce.mainPepper,
       imageUrl: url + '/images/' + req.file.filename,
-      heat: 0,
+      heat: req.body.sauce.heat,
       likes: 0,
       dislikes: 0,
       usersLiked: [],
@@ -54,20 +54,20 @@ exports.getOneSauces = (req, res, next) => {
     let sauces = new Sauces({ _id: req.params._id });
     if (req.file) {
       const url = req.protocol + '://' + req.get('host');
-      req.body.sauces =JSON.parse(req.body.sauces);
+      req.body.sauce = JSON.parse(req.body.sauce);
       sauces = {
         _id: req.params.id,
-        userId: req.body.sauces.userId,
-        name: req.body.sauces.name,
-        manufacturer: req.body.sauces.manufacturer,
-        description: req.body.sauces.description,
-        mainPepper: req.body.sauces.mainPepper,
-        imageUrl: url + '/images' + req.file.filename,
-        heat: req.body.sauces.heat,
-        likes: req.body.sauces.likes,
-        dislikes: req.body.sauces.dislikes,
-        usersLiked: req.body.sauces.usersLiked,
-        usersDisliked: req.body.sauces.usersDisliked,
+        userId: req.body.sauce.userId,
+        name: req.body.sauce.name,
+        manufacturer: req.body.sauce.manufacturer,
+        description: req.body.sauce.description,
+        mainPepper: req.body.sauce.mainPepper,
+        imageUrl: url + '/images/' + req.file.filename,
+        heat: req.body.sauce.heat,
+        likes: 0,
+        dislikes: 0,
+        usersLiked: [],
+        usersDisliked: [],
     };
     } else {
       sauces = {
@@ -125,8 +125,8 @@ exports.getOneSauces = (req, res, next) => {
 
     exports.getAllSauces = (req, res, next) => {
         Sauces.find().then(
-            (sauce) => {
-                res.status(200).json(sauce);
+            (sauces) => {
+                res.status(200).json(sauces);
             }
         ).catch(
             (error) => {
