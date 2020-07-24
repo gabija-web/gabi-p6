@@ -13,9 +13,9 @@ exports.createSauces = (req, res, next) => {
       description: req.body.sauce.description,
       mainPepper: req.body.sauce.mainPepper,
       imageUrl: url + '/images/' + req.file.filename,
-      heat: req.body.sauce.heat,
-      likes: req.body.sauce.likes,
-      dislikes: req.body.sauce.dislikes,
+      heat: 0,
+      likes: 0,
+      dislikes: 0,
       usersLiked: [],
       usersDisliked: [],
     });
