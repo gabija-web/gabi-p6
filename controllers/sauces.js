@@ -1,21 +1,23 @@
 const Sauces = require('../models/sauces');
 const fs = require('fs');
+const mongoose = require('mongoose');
 
 exports.createSauces = (req, res, next) => {
+  req.body.sauce = JSON.parse(req.body.sauce);
   const url = req.protocol + '://' + req.get('host');
-  req.body.sauces =JSON.parse(req.body.sauces);
-    const sauces = new Sauces({
-      userId: req.body.sauces.userId,
-      name: req.body.sauces.name,
-      manufacturer: req.body.sauces.manufacturer,
-      description: req.body.sauces.description,
-      mainPepper: req.body.sauces.mainPepper,
-      imageUrl: url + '/images' + req.file.filename,
-      heat: req.body.sauces.heat,
-      likes: req.body.sauces.likes,
-      dislikes: req.body.sauces.dislikes,
-      usersLiked: req.body.sauces.usersLiked,
-      usersDisliked: req.body.sauces.usersDisliked,
+  const sauces = new Sauces({
+    _id: mongoose.Types.ObjectId(),
+      userId: req.body.sauce.userId,
+      name: req.body.sauce.name,
+      manufacturer: req.body.sauce.manufacturer,
+      description: req.body.sauce.description,
+      mainPepper: req.body.sauce.mainPepper,
+      imageUrl: url + '/images/' + req.file.filename,
+      heat: req.body.sauce.heat,
+      likes: req.body.sauce.likes,
+      dislikes: req.body.sauce.dislikes,
+      usersLiked: [],
+      usersDisliked: [],
     });
     sauces.save().then(
         () => {
