@@ -136,3 +136,16 @@ exports.getOneSauces = (req, res, next) => {
             }
         );
       };
+
+      exports.likeSauce = (req, res, next) => {
+        Sauces.findById(req.params.id, function (err, theUser) {
+          if (err) {
+              console.log(err);
+          } else {
+              theUser.likes += 1;
+              theUser.save();
+              console.log(theUser.likes);
+              res.send({likeCount: theUser.likes}); //something like this...
+          }
+      });
+  }
