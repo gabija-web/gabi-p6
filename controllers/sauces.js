@@ -1,6 +1,7 @@
 const Sauces = require('../models/sauces');
 const fs = require('fs');
 const mongoose = require('mongoose');
+const User = require('../models/user');
 
 exports.createSauces = (req, res, next) => {
   req.body.sauce = JSON.parse(req.body.sauce);
@@ -52,6 +53,7 @@ exports.getOneSauces = (req, res, next) => {
 
   exports.modifySauces = (req, res, next) => {
     let sauces = new Sauces({ _id: req.params._id });
+    console.log(req.file)
     if (req.file) {
       const url = req.protocol + '://' + req.get('host');
       req.body.sauce = JSON.parse(req.body.sauce);
@@ -64,10 +66,10 @@ exports.getOneSauces = (req, res, next) => {
         mainPepper: req.body.sauce.mainPepper,
         imageUrl: url + '/images/' + req.file.filename,
         heat: req.body.sauce.heat,
-        likes: 0,
-        dislikes: 0,
-        usersLiked: [],
-        usersDisliked: [],
+        // likes: 0,
+        // dislikes: 0,
+        // usersLiked: [],
+        // usersDisliked: [],
     };
     } else {
       sauces = {
@@ -77,12 +79,12 @@ exports.getOneSauces = (req, res, next) => {
         manufacturer: req.body.manufacturer,
         description: req.body.description,
         mainPepper: req.body.mainPepper,
-        imageUrl: req.body.imageUrl,
+        // imageUrl: req.body.imageUrl,
         heat: req.body.heat,
-        likes: req.body.likes,
-        dislikes: req.body.dislikes,
-        usersLiked: req.body.usersLiked,
-        usersDisliked: req.body.usersDisliked,
+        // likes: req.body.likes,
+        // dislikes: req.body.dislikes,
+        // usersLiked: req.body.usersLiked,
+        // usersDisliked: req.body.usersDisliked,
       };
     }
     Sauces.updateOne({_id: req.params.id}, sauces).then(
@@ -138,14 +140,26 @@ exports.getOneSauces = (req, res, next) => {
       };
 
       exports.likeSauce = (req, res, next) => {
-        Sauces.findById(req.params.id, function (err, theUser) {
-          if (err) {
-              console.log(err);
-          } else {
-              theUser.likes += 1;
-              theUser.save();
-              console.log(theUser.likes);
-              res.send({likeCount: theUser.likes}); //something like this...
-          }
-      });
-  }
+        counter = req.body.like;
+        Sauces.update({_id: req.params.id},{$inc:{likes:counter}}).exec()
+          .then(
+            (sauce) => {
+              sauce.usersLiked.push(req.body.userId)
+              sauce.save().then( 
+                () => {}
+                ).catch(
+                (error) => {
+                  res.status(500).json({
+                    error: error
+                  });
+                });
+              res.status(200).json({message:'liked'});
+            }
+          )
+        // ).catch(
+        //   (error) =>{
+        //   res.status(500).json({
+        //     error: error
+        //   });
+        // });
+       };
