@@ -141,10 +141,12 @@ exports.getOneSauces = (req, res, next) => {
 
       exports.likeSauce = (req, res, next) => {
         counter = req.body.like;
-        Sauces.update({_id: req.params.id},{$inc:{likes:counter}}).exec()
-          .then(
+        Sauces.findOne({_id: req.params.id}).then(
+        
             (sauce) => {
               sauce.usersLiked.push(req.body.userId)
+              sauce.likes += req.body.like
+              console.log(sauce)
               sauce.save().then( 
                 () => {}
                 ).catch(
@@ -155,11 +157,11 @@ exports.getOneSauces = (req, res, next) => {
                 });
               res.status(200).json({message:'liked'});
             }
-          )
-        // ).catch(
-        //   (error) =>{
-        //   res.status(500).json({
-        //     error: error
-        //   });
-        // });
+                 
+        ).catch(
+          (error) =>{
+          res.status(500).json({
+            error: error
+          });
+        });
        };
