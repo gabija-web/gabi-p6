@@ -141,11 +141,31 @@ exports.getOneSauces = (req, res, next) => {
 
       exports.likeSauce = (req, res, next) => {
         counter = req.body.like;
-        Sauces.findOne({_id: req.params.id}).then(
-        
+        counter = req.body.dislike;
+        Sauces.findOne({_id: req.params.id}).then( 
             (sauce) => {
-              sauce.usersLiked.push(req.body.userId)
-              sauce.likes += req.body.like
+              if (req.body.like == 1) {
+                sauce.likes += req.body.like
+                sauce.usersLiked.push(req.body.userId)
+                for (i=0; i<sauce.usersDisliked.length; i++) {
+                  if (sauce.usersDisliked[i] ==req.body.userId){
+                    //remove this element from the array
+                    sauce.dislikes -= 1;
+                    sauce.usersDisliked.splice(i,1)
+                  }
+                }
+              } else {
+                sauce.dislikes += 1;
+                sauce.usersDisliked.push(req.body.userId)
+                for (i=0; i<sauce.usersLiked.length; i++) {
+                  if (sauce.usersLiked[i] ==req.body.userId){
+                    //remove this element from the array
+                    sauce.usersLiked.splice(i,1)
+                    sauce.likes += req.body.like
+                  }
+                }
+              }
+              
               console.log(sauce)
               sauce.save().then( 
                 () => {}
@@ -155,7 +175,7 @@ exports.getOneSauces = (req, res, next) => {
                     error: error
                   });
                 });
-              res.status(200).json({message:'liked'});
+              res.status(200).json({message:'disliked'});
             }
                  
         ).catch(
@@ -164,4 +184,4 @@ exports.getOneSauces = (req, res, next) => {
             error: error
           });
         });
-       };
+      };
